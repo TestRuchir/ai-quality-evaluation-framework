@@ -10,7 +10,10 @@ A Python-first, **educational portfolio** demonstrating quality engineering for 
 - Golden-dataset checks for answer correctness and scoring aggregation
 - Deterministic retrieval checks: hit rate, precision, recall, and groundedness checks for a small demo corpus
 - Agent tool selection and argument correctness with inspectable traces
-- Multi-turn chatbot memory and isolation checks
+- Multi-turn chatbot memory and isolation checks: a mock bot, plus a real Claude chatbot (`chatbot/`) scored with DeepEval conversational metrics (knowledge retention, turn relevancy, role adherence, conversation completeness)
+- DeepEval `EvaluationDataset` / `Golden` / `ConversationalGolden` loaded from the JSON golden datasets (`evals/datasets.py`)
+- Agent task-level metrics: DeepEval `ToolCorrectnessMetric` and `TaskCompletionMetric` on the live agent's trace (`evals/test_agent_live.py`)
+- Regression tracking: committed score baseline, CI gate on metric drops, run history, and change-vs-baseline in the HTML report (`evals/regression.py`)
 - RAGAS evaluation (faithfulness, answer relevancy, context precision/recall) alongside DeepEval (`evals/ragas_metrics.py`)
 - LangGraph support agent (`agent/`): tools (policy search, order lookup with per-customer authorization, safe calculator), input/output guardrails, step limit, and white-box trace capture, tested offline with a scripted chat model
 - Prompt-injection / jailbreak test suite (`datasets/safety_golden.json`) for the rule-based guard, including false-positive checks
@@ -40,6 +43,10 @@ deepeval test run evals/        # pytest-style quality gate (fails if any metric
 python -m evals.run_evaluation  # DeepEval + RAGAS + safety batch run -> reports/*.json + reports/eval_report.html
 
 python -m agent.graph "Can I still return order 1002?"   # LangGraph agent with printed tool trace
+python -m chatbot.bot                                       # interactive multi-turn Claude chatbot
+
+python -m evals.regression update   # promote this run's scores to baselines/eval_baseline.json (commit it)
+python -m evals.regression check    # exit 1 if any metric regressed vs the baseline (runs in CI)
 
 python -m evals.human_review export      # reports/human_review.csv: fill in human_pass (yes/no)
 python -m evals.human_review agreement   # judge vs human agreement + Cohen's kappa per metric
@@ -90,13 +97,14 @@ Pytest evaluation harness
 | Agent | Tool choice, argument correctness, step count, authorization | White-box trace assertions on a LangGraph agent (scripted LLM offline, real LLM in `evals/`) |
 | Safety | Injection catch rate, false-positive rate, toxicity, bias, PII leakage, injection resistance | Rule-based guard tests + DeepEval LLM judge |
 | Judge reliability | Raw agreement, Cohen's kappa | Human review CSV |
-| Chatbot | Context retention, session isolation | Multi-turn state tests |
+| Regression | Score / pass-rate change vs baseline | Committed baseline + tolerance-based CI gate + run history |
+| Chatbot | Context retention, session isolation, knowledge retention, role adherence | Multi-turn state tests (mock + fake client) and DeepEval conversational metrics on the live Claude bot |
 | Live RAG | Contextual precision/recall/relevancy, faithfulness, answer relevancy, hallucination, GEval | DeepEval LLM-as-judge |
 
 ## Possible extensions
 - Larger golden datasets and adversarial cases generated with DeepEval/RAGAS synthesizers
 - LLM-based input classifier to complement the regex injection guard
-- Trend tracking of eval scores across CI runs
+- Trend charts from `reports/history.jsonl`
 
 ## Portfolio / interview talking points
 - Why deterministic exact-match metrics are inadequate for open-ended LLM outputs

@@ -15,5 +15,9 @@
 | Model-based safety evaluation (toxicity, bias, PII, injection) | `evals/safety_metrics.py`, `evals/test_safety_deepeval.py` | Implemented demo |
 | LLM-as-judge reliability via human review (Cohen's kappa) | `evals/human_review.py` | Implemented demo |
 | HTML reporting | `evals/report.py` | Implemented demo |
+| DeepEval EvaluationDataset / Golden / ConversationalGolden | `evals/datasets.py` | Implemented demo |
+| Agent task completion and tool correctness (DeepEval) | `evals/test_agent_live.py`, `tests/test_deepeval_offline.py` | Implemented demo |
+| Live multi-turn chatbot evaluation (ConversationalTestCase) | `chatbot/`, `evals/test_chatbot_deepeval.py`, `tests/test_claude_chatbot.py` | Implemented demo |
+| Regression tracking against a baseline | `evals/regression.py`, `tests/test_regression.py` | Implemented demo |
 
 **Important:** These are portfolio exercises; do not present them as client production code.
