@@ -1,0 +1,4 @@
+pytest>=8.0,<10
+# LangGraph agent (offline tests drive it with a scripted chat model). Requires Python 3.10+.
+langgraph>=1.0,<2
+langchain-core>=1.0,<2
